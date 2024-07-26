@@ -1,6 +1,4 @@
 import pygame
-import math
-
 import conf
 
 
@@ -16,21 +14,23 @@ class GameCore:
 
         self.last_event = None
 
-        self.wall_width = 10
-        self.wall_height = 200
-        self.wall_position_x = self.screen_width - self.wall_width * 2
-        self.wall_position_y = self.screen_height / 2
+        self.wall_width = conf.WALL_WIDTH
+        self.wall_height = conf.WALL_HEIGHT
+        self.wall_position_x = conf.WALL_START_POS_X
+        self.wall_position_y = conf.WALL_START_POS_Y
         self.wall_speed = 1
         self.wall_color = (190, 190, 190)
+        self.wall_rect = None
 
-        self.ball_position_x = 20
-        self.ball_position_y = self.screen_height / 2
-        self.ball_radius = 10
-        self.ball_speed = 1
+        self.ball_position_x = conf.BALL_START_POS_X
+        self.ball_position_y = conf.BALL_START_POS_Y
+        self.ball_radius = conf.BALL_RADIUS
+        self.ball_speed = 2
         self.ball_color = (250, 50, 50)
+        self.ball_rect = None
 
     def draw_wall(self):
-        pygame.draw.rect(
+        self.wall_rect = pygame.draw.rect(
             self.screen,
             self.wall_color,
             (
@@ -42,7 +42,7 @@ class GameCore:
         )
 
     def draw_ball(self):
-        pygame.draw.circle(
+        self.ball_rect = pygame.draw.circle(
             self.screen,
             self.ball_color,
             (
@@ -59,12 +59,20 @@ class GameCore:
         if self.last_event == pygame.K_RETURN:
             self.ball_position_x += self.ball_speed
 
+    def update_wall_height(self):
+        self.wall_height /= 1.5
+
+    def reset_positions(self):
+        self.ball_position_x = conf.BALL_START_POS_X
+        self.wall_position_y = conf.WALL_START_POS_Y
+
     def ball_control(self, event):
         if event.key == pygame.K_RETURN:
             self.last_event = pygame.K_RETURN
 
     def border_patrol(self):
         if self.ball_position_x > self.screen_width:
+            self.ball_speed = 0
             self.game_is_over = True
 
         if self.wall_position_y < 0:
@@ -75,7 +83,10 @@ class GameCore:
             self.wall_speed = -1
 
     def collision_police(self):
-        pass
+        if self.ball_rect.colliderect(self.wall_rect):
+            self.last_event = None
+            self.reset_positions()
+            self.update_wall_height()
 
     def run_game(self):
 
@@ -102,9 +113,12 @@ class GameCore:
             for i in range(5):
                 self.move_wall()
                 self.move_ball()
-                self.border_patrol()
+
                 self.draw_wall()
                 self.draw_ball()
+
+                self.border_patrol()
+                self.collision_police()
 
             # final draw
             pygame.display.flip()
