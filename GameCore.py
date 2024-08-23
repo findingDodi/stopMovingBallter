@@ -6,10 +6,6 @@ import conf
 
 class GameCore:
 
-    FPS = 60
-    WALL_SPEED = 100
-    BALL_SPEED = 500
-
     def __init__(self):
         self.screen = None
         self.screen_width = conf.SCREEN_SIZE[0]
@@ -24,14 +20,14 @@ class GameCore:
         self.wall_height = conf.WALL_HEIGHT
         self.wall_position_x = conf.WALL_START_POS_X
         self.wall_position_y = conf.WALL_START_POS_Y
-        self.wall_speed = GameCore.WALL_SPEED
+        self.wall_speed = conf.WALL_SPEED
         self.wall_color = (190, 190, 190)
         self.wall_rect = None
 
         self.ball_position_x = conf.BALL_START_POS_X
         self.ball_position_y = conf.BALL_START_POS_Y
         self.ball_radius = conf.BALL_RADIUS
-        self.ball_speed = GameCore.BALL_SPEED
+        self.ball_speed = conf.BALL_SPEED
         self.ball_color = (250, 50, 50)
         self.ball_rect = None
 
@@ -75,10 +71,10 @@ class GameCore:
         self.wall_height = conf.WALL_HEIGHT
 
     def get_correct_wall_speed(self, delta_time):
-        return GameCore.WALL_SPEED * (delta_time / 1000)
+        return conf.WALL_SPEED * (delta_time / 1000)
 
     def get_correct_ball_speed(self, delta_time):
-        return GameCore.BALL_SPEED * (delta_time / 1000)
+        return conf.BALL_SPEED * (delta_time / 1000)
 
     def reset_positions(self):
         self.ball_position_x = conf.BALL_START_POS_X
@@ -121,7 +117,7 @@ class GameCore:
             self.reset_wall_height()
             self.paint_wall()
             self.reset_positions()
-            self.ball_speed = GameCore.BALL_SPEED  # feature lol
+            self.ball_speed = conf.BALL_SPEED  # feature lol
             self.last_event = None
             self.game_is_over = False
 
@@ -135,7 +131,7 @@ class GameCore:
 
         while self.game_is_running:
             # limit framespeed to 30fps
-            delta_time = clock.tick(GameCore.FPS)
+            delta_time = clock.tick(conf.FPS)
             self.ball_speed = self.get_correct_ball_speed(delta_time)
             self.screen.fill((55, 55, 55), self.background_rect)
 
