@@ -15,6 +15,7 @@ class GameCore:
         self.background_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
 
         self.last_event = None
+        self.delta_time = 0
 
         self.wall_width = conf.WALL_WIDTH
         self.wall_height = conf.WALL_HEIGHT
@@ -70,11 +71,11 @@ class GameCore:
     def reset_wall_height(self):
         self.wall_height = conf.WALL_HEIGHT
 
-    def get_correct_wall_speed(self, delta_time):
-        return conf.WALL_SPEED * (delta_time / 1000)
+    def get_correct_wall_speed(self):
+        return conf.WALL_SPEED * (self.delta_time / 1000)
 
-    def get_correct_ball_speed(self, delta_time):
-        return conf.BALL_SPEED * (delta_time / 1000)
+    def get_correct_ball_speed(self):
+        return conf.BALL_SPEED * (self.delta_time / 1000)
 
     def reset_positions(self):
         self.ball_position_x = conf.BALL_START_POS_X
@@ -84,17 +85,17 @@ class GameCore:
         if event.key == pygame.K_RETURN:
             self.last_event = pygame.K_RETURN
 
-    def border_patrol(self, delta_time):
+    def border_patrol(self):
         if self.ball_position_x > self.screen_width:
             self.ball_speed = 0
             self.game_is_over = True
 
         if self.wall_position_y < 0:
             self.wall_position_y = 0
-            self.wall_speed = self.get_correct_wall_speed(delta_time)
+            self.wall_speed = self.get_correct_wall_speed()
         elif self.wall_position_y > self.screen_height - self.wall_height:
             self.wall_position_y = self.screen_height - self.wall_height
-            self.wall_speed = -self.get_correct_wall_speed(delta_time)
+            self.wall_speed = -self.get_correct_wall_speed()
 
     def collision_police(self):
         if self.ball_rect.colliderect(self.wall_rect):
@@ -131,8 +132,8 @@ class GameCore:
 
         while self.game_is_running:
             # limit framespeed to 30fps
-            delta_time = clock.tick(conf.FPS)
-            self.ball_speed = self.get_correct_ball_speed(delta_time)
+            self.delta_time = clock.tick(conf.FPS)
+            self.ball_speed = self.get_correct_ball_speed()
             self.screen.fill((55, 55, 55), self.background_rect)
 
             for event in pygame.event.get():
@@ -153,7 +154,7 @@ class GameCore:
                 self.draw_wall()
                 self.draw_ball()
 
-                self.border_patrol(delta_time)
+                self.border_patrol()
                 self.collision_police()
 
             else:
