@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import conf
 
@@ -59,6 +61,9 @@ class GameCore:
         if self.last_event == pygame.K_RETURN:
             self.ball_position_x += self.ball_speed
 
+    def paint_wall(self):
+        self.wall_color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
     def update_wall_height(self):
         self.wall_height /= 1.5
 
@@ -104,6 +109,7 @@ class GameCore:
     def restart_game(self):
         if self.game_is_over:
             self.reset_wall_height()
+            self.paint_wall()
             self.reset_positions()
             self.ball_speed = 2
             self.last_event = None
