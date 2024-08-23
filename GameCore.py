@@ -6,6 +6,9 @@ import conf
 
 class GameCore:
 
+    WALL_SPEED = 5
+    BALL_SPEED = 10
+
     def __init__(self):
         self.screen = None
         self.screen_width = conf.SCREEN_SIZE[0]
@@ -20,14 +23,14 @@ class GameCore:
         self.wall_height = conf.WALL_HEIGHT
         self.wall_position_x = conf.WALL_START_POS_X
         self.wall_position_y = conf.WALL_START_POS_Y
-        self.wall_speed = 1
+        self.wall_speed = GameCore.WALL_SPEED
         self.wall_color = (190, 190, 190)
         self.wall_rect = None
 
         self.ball_position_x = conf.BALL_START_POS_X
         self.ball_position_y = conf.BALL_START_POS_Y
         self.ball_radius = conf.BALL_RADIUS
-        self.ball_speed = 2
+        self.ball_speed = GameCore.BALL_SPEED
         self.ball_color = (250, 50, 50)
         self.ball_rect = None
 
@@ -85,10 +88,10 @@ class GameCore:
 
         if self.wall_position_y < 0:
             self.wall_position_y = 0
-            self.wall_speed = 1
+            self.wall_speed = GameCore.WALL_SPEED
         elif self.wall_position_y > self.screen_height - self.wall_height:
             self.wall_position_y = self.screen_height - self.wall_height
-            self.wall_speed = -1
+            self.wall_speed = -GameCore.WALL_SPEED
 
     def collision_police(self):
         if self.ball_rect.colliderect(self.wall_rect):
@@ -111,7 +114,7 @@ class GameCore:
             self.reset_wall_height()
             self.paint_wall()
             self.reset_positions()
-            self.ball_speed = 2
+            self.ball_speed = GameCore.BALL_SPEED
             self.last_event = None
             self.game_is_over = False
 
@@ -140,15 +143,15 @@ class GameCore:
                         self.ball_control(event)
 
             if not self.game_is_over:
-                for i in range(5):
-                    self.move_wall()
-                    self.move_ball()
+                self.move_wall()
+                self.move_ball()
 
-                    self.draw_wall()
-                    self.draw_ball()
+                self.draw_wall()
+                self.draw_ball()
 
-                    self.border_patrol()
-                    self.collision_police()
+                self.border_patrol()
+                self.collision_police()
+
             else:
                 self.draw_game_over_screen()
 
