@@ -62,6 +62,9 @@ class GameCore:
     def update_wall_height(self):
         self.wall_height /= 1.5
 
+    def reset_wall_height(self):
+        self.wall_height = conf.WALL_HEIGHT
+
     def reset_positions(self):
         self.ball_position_x = conf.BALL_START_POS_X
         self.wall_position_y = conf.WALL_START_POS_Y
@@ -88,6 +91,24 @@ class GameCore:
             self.reset_positions()
             self.update_wall_height()
 
+    def draw_game_over_screen(self):
+        if self.game_is_over:
+            font = pygame.font.SysFont('Open Sans', 40)
+            font_color = (255, 255, 255)
+            font_position = ((conf.SCREEN_SIZE[0] / 2 - 90), conf.SCREEN_SIZE[1] / 2 - 30)
+            font_position2 = ((conf.SCREEN_SIZE[0] / 2 - 160), conf.SCREEN_SIZE[1] / 2 + 10)
+            self.screen.fill((55, 55, 55), self.background_rect)
+            self.screen.blit(font.render('GAME OVER', True, font_color), font_position)
+            self.screen.blit(font.render('PRESS R TO RESTART', True, font_color), font_position2)
+
+    def restart_game(self):
+        if self.game_is_over:
+            self.reset_wall_height()
+            self.reset_positions()
+            self.ball_speed = 2
+            self.last_event = None
+            self.game_is_over = False
+
     def run_game(self):
 
         pygame.init()
@@ -107,18 +128,23 @@ class GameCore:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.game_is_running = False
+                    elif event.key == pygame.K_r:
+                        self.restart_game()
                     else:
                         self.ball_control(event)
 
-            for i in range(5):
-                self.move_wall()
-                self.move_ball()
+            if not self.game_is_over:
+                for i in range(5):
+                    self.move_wall()
+                    self.move_ball()
 
-                self.draw_wall()
-                self.draw_ball()
+                    self.draw_wall()
+                    self.draw_ball()
 
-                self.border_patrol()
-                self.collision_police()
+                    self.border_patrol()
+                    self.collision_police()
+            else:
+                self.draw_game_over_screen()
 
             # final draw
             pygame.display.flip()
